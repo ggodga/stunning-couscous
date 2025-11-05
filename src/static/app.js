@@ -20,6 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const spotsLeft = details.max_participants - details.participants.length;
 
+        // core details
         activityCard.innerHTML = `
           <h4>${name}</h4>
           <p>${details.description}</p>
@@ -27,7 +28,42 @@ document.addEventListener("DOMContentLoaded", () => {
           <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
         `;
 
+        // participants section (built with DOM to avoid raw HTML injection)
+        const participantsSection = document.createElement("div");
+        participantsSection.className = "participants";
+
+        const participantsTitle = document.createElement("h5");
+        participantsTitle.textContent = "Participants";
+        participantsSection.appendChild(participantsTitle);
+
+        if (Array.isArray(details.participants) && details.participants.length > 0) {
+          const ul = document.createElement("ul");
+          details.participants.forEach((p) => {
+            const li = document.createElement("li");
+
+            const badge = document.createElement("span");
+            badge.className = "participant-badge";
+            // show first letter from name/email (uppercase)
+            badge.textContent = (typeof p === "string" && p.length > 0) ? p.trim()[0].toUpperCase() : "?";
+
+            const nameSpan = document.createElement("span");
+            nameSpan.className = "participant-name";
+            nameSpan.textContent = p;
+
+            li.appendChild(badge);
+            li.appendChild(nameSpan);
+            ul.appendChild(li);
+          });
+          participantsSection.appendChild(ul);
+        } else {
+          const noParticipants = document.createElement("p");
+          noParticipants.className = "no-participants";
+          noParticipants.textContent = "Be the first to sign up!";
+          participantsSection.appendChild(noParticipants);
+        }
+
         activitiesList.appendChild(activityCard);
+        activityCard.appendChild(participantsSection);
 
         // Add option to select dropdown
         const option = document.createElement("option");
